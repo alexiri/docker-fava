@@ -27,17 +27,17 @@ RUN apk add --update ${BUILDDEPS} \
 
 FROM tiangolo/uwsgi-nginx-flask:python3.6-alpine3.7
 
-ENV BEANCOUNT_INPUT_FILE "/app/example.beancount"
+ENV BEANCOUNT_INPUT_FILE "/data/example.beancount"
 ENV PV "3.6"
 
 RUN rm -f /app/*
+VOLUME /data
+WORKDIR /data
 
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 RUN cp -r /usr/local/lib/python${PV}/site-packages/fava/static /app
 
 COPY main.py /app
 COPY uwsgi.ini /app
-COPY example.beancount /app
+COPY example.beancount /data
 
-VOLUME /data
-WORKDIR /data
