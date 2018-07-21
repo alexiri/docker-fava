@@ -2,7 +2,7 @@ FROM python:3.6.5-alpine3.7 as build_env
 
 ENV FAVA_VERSION "v1.7"
 ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
-ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++"
+ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++ openblas-dev"
 # Short python version.
 ENV PV "3.6"
 
@@ -18,6 +18,10 @@ RUN apk add --update ${BUILDDEPS} \
         && make -C fava \
         && make -C fava mostlyclean \
         && python3 -mpip install ./fava \
+        && python3 -mpip install numpy \
+        && python3 -mpip install scipy \
+        && git clone https://github.com/beancount/smart_importer.git \
+        && python3 -mpip install ./smart_importer \
         && echo "strip .so files:" \
         && find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
         && echo "remove __pycache__ directories" \
