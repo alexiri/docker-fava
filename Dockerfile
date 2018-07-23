@@ -2,12 +2,13 @@ FROM python:3.6.5-alpine3.7 as build_env
 
 ENV FAVA_VERSION "v1.7"
 ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
-ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++ openblas-dev"
+ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++ lapack-dev gfortran"
 # Short python version.
 ENV PV "3.6"
 
 WORKDIR /root
 RUN apk add --update ${BUILDDEPS} \
+        && pip install --upgrade pip \
         && hg clone --config hostsecurity.bitbucket.org:fingerprints=$FINGERPRINT https://bitbucket.org/blais/beancount \
         && (cd beancount && hg log -l1) \
         && git clone --branch ${FAVA_VERSION} --depth 1 https://github.com/beancount/fava.git \
@@ -19,7 +20,6 @@ RUN apk add --update ${BUILDDEPS} \
         && make -C fava mostlyclean \
         && python3 -mpip install ./fava \
         && python3 -mpip install numpy \
-        && python3 -mpip install scipy \
         && git clone https://github.com/beancount/smart_importer.git \
         && python3 -mpip install ./smart_importer \
         && echo "strip .so files:" \
@@ -38,6 +38,8 @@ RUN rm -f /app/*
 VOLUME /data
 
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
+COPY --from=build_env /usr/local/bin/fava /usr/local/bin
+COPY --from=build_env /usr/local/bin/bean* /usr/local/bin
 RUN cp -r /usr/local/lib/python${PV}/site-packages/fava/static /app
 
 COPY main.py /app
