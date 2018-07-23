@@ -19,6 +19,7 @@ RUN apk add --update ${BUILDDEPS} \
         && make -C fava \
         && make -C fava mostlyclean \
         && python3 -mpip install ./fava \
+        && python3 -mpip install scipy \
         && python3 -mpip install numpy \
         && git clone https://github.com/beancount/smart_importer.git \
         && python3 -mpip install ./smart_importer \
