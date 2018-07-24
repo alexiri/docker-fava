@@ -40,7 +40,7 @@ VOLUME /data
 
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin
-COPY --from=build_env /usr/local/bin/bean* /usr/local/bin
+COPY --from=build_env /usr/local/bin/bean* /usr/local/bin/
 RUN cp -r /usr/local/lib/python${PV}/site-packages/fava/static /app
 
 COPY main.py /app
