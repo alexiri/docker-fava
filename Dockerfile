@@ -38,6 +38,7 @@ ENV PV "3.6"
 RUN rm -f /app/*
 VOLUME /data
 
+RUN apk add --no-cache lapack libstdc++
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin
 COPY --from=build_env /usr/local/bin/bean* /usr/local/bin/
