@@ -1,6 +1,6 @@
 FROM python:3.6.5-alpine3.7 as build_env
 
-ENV FAVA_VERSION "v1.7"
+ENV FAVA_VERSION "v1.8"
 ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
 ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++ lapack-dev gfortran"
 # Short python version.
