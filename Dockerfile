@@ -1,6 +1,6 @@
 FROM python:3.6.5-alpine3.7 as build_env
 
-ENV FAVA_VERSION "v1.8"
+ENV FAVA_VERSION "master"
 ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
 ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++ lapack-dev gfortran"
 # Short python version.
@@ -23,6 +23,7 @@ RUN apk add --update ${BUILDDEPS} \
         && python3 -mpip install numpy \
         && git clone https://github.com/beancount/smart_importer.git \
         && python3 -mpip install ./smart_importer \
+        && python3 -mpip install beancount_portfolio_allocation \
         && echo "strip .so files:" \
         && find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
         && echo "remove __pycache__ directories" \
@@ -42,6 +43,7 @@ RUN apk add --no-cache lapack libstdc++
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin
 COPY --from=build_env /usr/local/bin/bean* /usr/local/bin/
+ADD amortize_over.py /usr/local/lib/python${PV}/
 RUN cp -r /usr/local/lib/python${PV}/site-packages/fava/static /app
 
 COPY main.py /app
