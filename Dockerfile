@@ -43,7 +43,7 @@ RUN apk add --no-cache lapack libstdc++
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin
 COPY --from=build_env /usr/local/bin/bean* /usr/local/bin/
-ADD amortize_over.py /usr/local/lib/python${PV}/
+ADD amortize_over.py /usr/local/lib/python${PV}/site-packages
 RUN cp -r /usr/local/lib/python${PV}/site-packages/fava/static /app
 
 COPY main.py /app
