@@ -1,4 +1,4 @@
-FROM python:3.6.5-alpine3.7 as build_env
+FROM alexiri/scipy:latest as build_env
 
 ENV FAVA_VERSION "master"
 ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
@@ -9,6 +9,9 @@ ENV PV "3.6"
 WORKDIR /root
 RUN apk add --update ${BUILDDEPS} \
         && pip install --upgrade pip \
+	&& python3 -mpip install importlib_metadata
+
+RUN echo "Install Beancount & Fava" \
         && hg clone --config hostsecurity.bitbucket.org:fingerprints=$FINGERPRINT https://bitbucket.org/blais/beancount \
         && (cd beancount && hg log -l1) \
         && git clone --branch ${FAVA_VERSION} --depth 1 https://github.com/beancount/fava.git \
@@ -18,11 +21,13 @@ RUN apk add --update ${BUILDDEPS} \
         && python3 -mpip install ./beancount \
         && make -C fava \
         && make -C fava mostlyclean \
-        && python3 -mpip install ./fava \
-        && python3 -mpip install cython numpy scipy \
+        && python3 -mpip install ./fava
+
+RUN echo "Install Smart Importer" \
         && git clone https://github.com/beancount/smart_importer.git \
+        && (cd smart_importer && git log -1) \
         && python3 -mpip install ./smart_importer \
-        && python3 -mpip install beancount_portfolio_allocation \
+        && python3 -mpip install beancount_portfolio_allocation # \
         && echo "strip .so files:" \
         && find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
         && echo "remove __pycache__ directories" \
