@@ -1,13 +1,14 @@
 FROM alexiri/scipy:latest as build_env
 
-ENV FAVA_VERSION "master"
+ENV FAVA_VERSION "v1.14"
 ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
-ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++ lapack-dev gfortran"
+ENV BUILDDEPS "libxml2-dev libxslt1-dev gcc musl-dev mercurial git nodejs npm make g++ liblapack-dev gfortran"
 # Short python version.
 ENV PV "3.6"
 
 WORKDIR /root
-RUN apk add --update ${BUILDDEPS} \
+RUN apt update \
+        && apt install -y ${BUILDDEPS} \
         && pip install --upgrade pip \
 	&& python3 -mpip install importlib_metadata
 
@@ -35,7 +36,7 @@ RUN echo "Install Smart Importer" \
         && find /usr/local/lib/python${PV} -name '*.dist-info' -exec rm -rf -v {} +
 
 
-FROM tiangolo/uwsgi-nginx-flask:python3.6-alpine3.7
+FROM tiangolo/uwsgi-nginx-flask:python3.6
 
 ENV BEANCOUNT_INPUT_FILE "/data/example.beancount"
 ENV PV "3.6"
@@ -43,7 +44,9 @@ ENV PV "3.6"
 RUN rm -f /app/*
 VOLUME /data
 
-RUN apk add --no-cache lapack libstdc++
+RUN apt update \
+       && apt install -y liblapack3 libstdc++ \
+       && rm -rf /var/lib/apt/lists/*
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin
 COPY --from=build_env /usr/local/bin/bean* /usr/local/bin/
@@ -53,4 +56,3 @@ RUN cp -r /usr/local/lib/python${PV}/site-packages/fava/static /app
 COPY main.py /app
 COPY uwsgi.ini /app
 COPY example.beancount /data
-
