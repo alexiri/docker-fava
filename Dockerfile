@@ -10,7 +10,8 @@ WORKDIR /root
 RUN apt update \
         && apt install -y ${BUILDDEPS} \
         && pip install --upgrade pip \
-	&& python3 -mpip install importlib_metadata
+        && npm install -g npm@latest \
+        && python3 -mpip install importlib_metadata
 
 RUN echo "Install Beancount & Fava" \
         && git clone --branch ${BEANCOUNT_VERSION} --depth 1 https://github.com/beancount/beancount.git \
