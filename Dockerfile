@@ -1,8 +1,8 @@
 FROM alexiri/scipy:latest as build_env
 
-ENV FAVA_VERSION "v1.14"
-ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
-ENV BUILDDEPS "libxml2-dev libxslt1-dev gcc musl-dev mercurial git nodejs npm make g++ liblapack-dev gfortran"
+ENV BEANCOUNT_VERSION "2.3.3"
+ENV FAVA_VERSION "v1.17"
+ENV BUILDDEPS "libxml2-dev libxslt1-dev gcc musl-dev git nodejs npm make g++ liblapack-dev gfortran"
 # Short python version.
 ENV PV "3.6"
 
@@ -13,8 +13,8 @@ RUN apt update \
 	&& python3 -mpip install importlib_metadata
 
 RUN echo "Install Beancount & Fava" \
-        && hg clone --config hostsecurity.bitbucket.org:fingerprints=$FINGERPRINT https://bitbucket.org/blais/beancount \
-        && (cd beancount && hg log -l1) \
+        && git clone --branch ${BEANCOUNT_VERSION} --depth 1 https://github.com/beancount/beancount.git \
+        && (cd beancount && git log -l1) \
         && git clone --branch ${FAVA_VERSION} --depth 1 https://github.com/beancount/fava.git \
         && (cd fava && git log -1) \
         && echo "Deleting symlink files as they will cause docker build error" \
@@ -28,7 +28,8 @@ RUN echo "Install Smart Importer" \
         && git clone https://github.com/beancount/smart_importer.git \
         && (cd smart_importer && git log -1) \
         && python3 -mpip install ./smart_importer \
-        && python3 -mpip install beancount_portfolio_allocation # \
+        && python3 -mpip install beancount_portfolio_allocation \
+        && python3 -mpip install fava-investor \
         && echo "strip .so files:" \
         && find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
         && echo "remove __pycache__ directories" \
@@ -45,7 +46,7 @@ RUN rm -f /app/*
 VOLUME /data
 
 RUN apt update \
-       && apt install -y liblapack3 libstdc++ \
+       && apt install -y liblapack3 \
        && rm -rf /var/lib/apt/lists/*
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin
