@@ -31,8 +31,8 @@ RUN echo "Install Smart Importer" \
         && python3 -mpip install ./smart_importer \
         && python3 -mpip install beancount_portfolio_allocation \
         && python3 -mpip install fava-investor \
-        && echo "strip .so files:" \
-        && find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
+        #&& echo "strip .so files:" \
+        #&& find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
         && echo "remove __pycache__ directories" \
         && find /usr/local/lib/python${PV} -name __pycache__ -exec rm -rf -v {} + \
         && find /usr/local/lib/python${PV} -name '*.dist-info' -exec rm -rf -v {} +
