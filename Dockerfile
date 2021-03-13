@@ -1,10 +1,10 @@
-FROM alexiri/scipy:latest as build_env
+FROM alexiri/scipy:3.8 as build_env
 
 ENV BEANCOUNT_VERSION "2.3.3"
-ENV FAVA_VERSION "v1.17"
+ENV FAVA_VERSION "v1.18"
 ENV BUILDDEPS "libxml2-dev libxslt1-dev gcc musl-dev git nodejs npm make g++ liblapack-dev gfortran"
 # Short python version.
-ENV PV "3.6"
+ENV PV "3.8"
 
 WORKDIR /root
 RUN apt update \
@@ -38,10 +38,10 @@ RUN echo "Install Smart Importer" \
         && find /usr/local/lib/python${PV} -name '*.dist-info' -exec rm -rf -v {} +
 
 
-FROM tiangolo/uwsgi-nginx-flask:python3.6
+FROM tiangolo/uwsgi-nginx-flask:python3.8
 
 ENV BEANCOUNT_INPUT_FILE "/data/example.beancount"
-ENV PV "3.6"
+ENV PV "3.8"
 
 RUN rm -f /app/*
 VOLUME /data
