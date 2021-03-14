@@ -31,6 +31,8 @@ RUN echo "Install Smart Importer" \
         && python3 -mpip install ./smart_importer \
         && python3 -mpip install beancount_portfolio_allocation \
         && python3 -mpip install pip install https://github.com/xuhcc/beancount-cryptoassets/archive/master.zip \
+        && python3 -mpip install pip install https://github.com/xuhcc/beancount-exchangerates/archive/master.zip \
+        && python3 -mpip install pip install https://github.com/tarioch/beancounttools/archive/master.zip \
         && python3 -mpip install fava-investor \
         #&& echo "strip .so files:" \
         #&& find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
@@ -48,7 +50,7 @@ RUN rm -f /app/*
 VOLUME /data
 
 RUN apt update \
-       && apt install -y liblapack3 \
+       && apt install -y liblapack3 ca-certificates \
        && rm -rf /var/lib/apt/lists/*
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin
