@@ -30,6 +30,7 @@ RUN echo "Install Smart Importer" \
         && (cd smart_importer && git log -1) \
         && python3 -mpip install ./smart_importer \
         && python3 -mpip install beancount_portfolio_allocation \
+        && python3 -mpip install pip install https://github.com/xuhcc/beancount-cryptoassets/archive/master.zip \
         && python3 -mpip install fava-investor \
         #&& echo "strip .so files:" \
         #&& find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
